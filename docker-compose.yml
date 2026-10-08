@@ -1,0 +1,68 @@
+# Aegnor: the database, the login and game servers.
+# `cp .env.example .env`, then `docker compose up -d`.
+services:
+  # The kit's database dumps, downloaded once into db-init/dumps.
+  db-dumps:
+    image: alpine:3.20
+    volumes:
+      - ./db-init/dumps:/dumps
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        cd /dumps
+        if [ -s aegnor_game.sql ] && [ -s aegnor_login.sql ] && [ -s aegnor_web.sql ]; then exit 0; fi
+        echo "downloading the kit's database (54 MB)..."
+        wget -q -O /tmp/db.zip https://github.com/jguyet/kit-1.43.7/raw/main/db-1.43.7.zip
+        unzip -o -j /tmp/db.zip 'db-1.43.7/*.sql' -d /dumps
+        ls -l /dumps
+
+  mariadb:
+    image: mariadb:11.3
+    restart: unless-stopped
+    depends_on:
+      db-dumps: { condition: service_completed_successfully }
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD missing, copy .env.example to .env}"
+    ports: ["127.0.0.1:${DB_PORT:-3306}:3306"]
+    volumes:
+      - db:/var/lib/mysql
+      # Run once, when the volume is created: a few minutes (226 MB of SQL).
+      - ./db-init/:/docker-entrypoint-initdb.d/:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 600s
+
+  login:
+    build: { context: ., dockerfile: docker/login.Dockerfile }
+    restart: unless-stopped
+    depends_on:
+      mariadb: { condition: service_healthy }
+    ports: ["${LOGIN_PORT:-1135}:1135"]
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./docker/login.config.properties:/app/config.template:ro
+    # The login's console reads stdin in a loop that swallows end-of-file: with
+    # stdin closed it spins at 100 % of a core. Open, it blocks as intended
+    # (and `docker compose attach login` gives the console).
+    stdin_open: true
+
+  game:
+    build: { context: ., dockerfile: docker/game.Dockerfile }
+    restart: unless-stopped
+    depends_on:
+      mariadb: { condition: service_healthy }
+      login: { condition: service_started }
+    ports: ["${GAME_PORT:-5555}:5555"]
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./docker/game.config.properties:/app/config.template:ro
+
+volumes:
+  db:

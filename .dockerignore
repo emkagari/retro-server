@@ -1,0 +1,3 @@
+# The images need game/ or login/ only.
+.git
+db-init

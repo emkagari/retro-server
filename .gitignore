@@ -1,18 +1,18 @@
-# artefacts de compilation
-build/
-out/
-*.class
-
-# configuration locale (contient le mot de passe de la base)
+# This machine's settings (database password).
+.env
 config.properties
 game/config.properties
 login/config.properties
 
-# logs
+# Downloaded by the db-dumps service.
+db-init/dumps/
+
+# Builds and logs outside Docker.
+build/
+out/
+*.class
 *.log
 logs/
-game/logs/
-login/logs/
 
 # IDE
 .idea/

@@ -1,0 +1,8 @@
+# Run in Linux containers: LF whatever the checkout (Windows' autocrlf).
+*.sh text eol=lf
+*.sql text eol=lf
+*.properties text eol=lf
+*.conf text eol=lf
+*.yml text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
