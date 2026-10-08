@@ -1,0 +1,240 @@
+Version 0.1 (30/05/2021) :
+- Ajout de la compatibilité des Maps (Client Retro)
+- Ajout de la prévisualisation de l'exp d'un groupe (Client Retro)
+- Correction des Packets du Panel EndFight (Client Retro GameResult)
+- Ajout de l'augmentation des Stats version amélioré (Client Retro)
+- Debug de 1000 Maps Supplémentaires
+- Debug de 3852 Scripted_Cells
+
+Version 0.2 (31/05/2021) :
+- Ajout du Restat via le Panel des Caractéristiques
+- Ajout du Nerf d'un sort sur le Panel des Sorts (-1 level à un sort)
+- Ajout de toutes les commandes pour le PanelAdmin
+
+Version 0.3 (02/06/2021) :
+- Ajout du Panel NPC
+- Ajout du Panel SpawnMobs
+- Ajout du Panel AddDrops
+- Ajout du Panel Triggers
+- Ajout du Panel MobStats
+- Ajout du Panel FightPos
+- Ajout de 23 Nouvelles Commandes Admin pour les différents Panel
+
+Version 0.4 (03/06/2021) :
+- Correction du Packet pour les informations de la map (PanelAdmin)
+
+Version 0.5 (09/06/2021) :
+- Ajout du Système de FM de l'ancien Serveur
+- Ajout du Système de Rareté des Items (Arwase)
+- Ajout des maps du Donjons Kralamour
+- Ajout de 3 Raccourcis (ShowFightPos / ShowMobGroupInfo / HideSprite) modifiable dans les raccourcis personalisés
+- Correction de la Commande ADDFIGHTPOS pour le PanelAdmin
+- Ajout du Bestiaire
+
+Version 0.6 (21/06/2021) :
+- Fix de la ligne de vue des Monstres
+- Fix du paquet du nombre de tours
+- Fix des packets de guilde (Annonce + Panel)
+- Fix packets Percepteur
+
+Version 0.7 (22/06/2021) :
+- Fix des dégâts en Couleurs
+- Correction du Bug de Portée, désormais la portée en stats est bien pris en compte
+- Ajout de toutes les Commandes de Aegnor
+- Ajout du système VIP
+- Ajout de la Boutique (reste 1 fix à faire (faire apparaître les items dans la boutique))
+- Correction du Restat
+- Fix l'hdv global
+
+Version 0.8 (24/06/2021) :
+- Fix des Jets d'Items
+- Fix du Stack des Items
+- Fix du Bug de visualisation des CellFights
+- Correction du Bug de la Commande pour supprimer les mobgroupfix de la map
+- Fix de la LDV des monstres
+- FIx des Langs pour les commandes
+- Fix de la Boutique
+- Ajout des drops items Hors Pano
+- Fix des panoplies de classe
+
+Version 0.9 (25/06/2021) :
+- Fix des positions d'invocation du Kralamour il invoque désormais au CaC d'un ennemi
+- Fix d'un bug de LDV sur les joueurs utilisant un sort
+- Fix de la commande d'ajout un groupe de Monstre Fix
+- Fix du Dragounet Rouge il peut désormais débuff
+- Fix de l'IA du Tofu désormais il s'éloigne des ennemies une fois qu'il a attaqué
+- Ajout du Panel de Changement de Classe + Debug
+- Suppression du Drop Pano Champ Champ sur les Fungus
+- Ajout d'une commande pour vendre tout son inventaire sauf objets de quête / liées ou équipées
+
+Version 1.0 (05/07/2021) :
+- Ajout des Runes de Rareté
+- Debug du FM via les Runes de Rareté
+- Debug du Concassage des items avec une génération de rune de rareté
+- Amélioration du Décryptage des Maps
+
+Version 1.1 (06/07/2021) :
+- Donjon Qu'tan + Monstres Debug 85% (Manque PNJ + Potion + Ressources)
+
+Version 1.2 (07/07/2021) :
+- Correction des Bonbons/Bénédiction/Malédiction
+- Ajout de deux action pour les Bénédiction et Malédiction
+- Fix du Chargement des Maps
+- Réglages des étoiles
+
+Version 1.3 (08/07/2021) :
+- Ajout des crafts de Dofus Retro 1.35
+- Ajout des deux nouvelles panoplies
+- Ajout de toutes les ressources de Dofus Retro 1.35
+- Ajout des drops sur les monstres du Donjon Ilyzaelle
+- Ajout des drops sur les monstres du Donjon Qu'Tan
+- Refonte des conditions des maps, désormais on peut contrôller les éléments et caractéristique interdit d'une map avec le panel admin, (Donjon/Pas de prisme/ Pas d'agression/ pas de Défie/ Map VIP/ Pas de perco...)
+- Fix des Hdv, les normaux sont indépendants du global désormais
+
+Version 1.4 (09/07/2021) :
+- Fix de l'HDV global en mode Vente
+
+Version 1.5 (10/07/2021) :
+- Fix du Packet AS toutes les Stats sont envoyés (Les CC sont de nouveaux affichés)
+- Ajout de l'autorisation de mettre des fragments magiques dans la barre de raccourcis des items
+- Fix de l'IA 32, désormais après la fin de leurs attaques l'entité pars au loins
+- Correction du Chargement du nom des Monstres
+- Correction de la Commande Admin "ADD_DROP"
+- Création de l'IA 72
+- Fix des dernières recettes
+- Ajout de tout les nouveaux Drops
+- Ajout de deux nouvelles ressources
+
+Version 1.6 à 2.0 :
+
+- Principalement Patch Item
+- Patch BDD et SWF
+
+Version 2.1 (26/07/2021) :
+
+- Revue de la loi Exo pour les nouveaux items
+- Fix du .maitre (Rejoindre + Mettre prêt)
+- Fix de l'Arc Ardie
+- Fix de l'achat du Dofus Cawotte
+- Fix des conditions de map (Certaine à voir encore)
+- Possibilité de Mimibioter Coiffe/Cape/Bouclier/Familier
+- Fix du Système de Rareté
+- Fix du Ougah (Debug en live après application du patch)
+- Ajout d'une commande .demorph en cas de Bug d'apparence via Changement de Classe
+- Chemin du Kralamour fix
+- Donjon Abraknyde Raccourci
+
+Version 2.2 (27/07/2021) :
+
+- Revue du kick en préparation de combat
+- Fix des deux nouveaux donjons (Endfight)
+- Fix des stats familliers
+- Fix des boost Invocation (stats perso)
+- Ajout du .fightdeblo
+- Revue de la commande .sellitem (prend en compte la quantité avec le juste prix)
+- Dégâts de Poussés comme Dofus Officiel
+- Fix d'une commande admin pour intégrer les fightpos en IG
+- Fix Désactivation du Lancer en Ligne
+- Fix de la Po Modifiable sur un Sort
+- Fix des +Do sur un Sort
+- Fix du sort Peur
+
+Version 2.3 (31/07/2021) : 
+
+- Fix du Donjon du Koulosse
+- Fix entrée du Donjon squelette
+- Debug du Repaire des Bandits (Easter Egg Dofus)
+- Fix de la Map de Qu'Tan
+- Fix IA de La Folle
+- Fix IA du Dragounnet Rouge
+- Fix IA du Tofu
+- Fix IA du Prespic
+- Revue des Points de Vie de la Cawotte
+- Revue des Points de Vie de l'Arakne Majeure
+- Condition du Ramboton enlevé
+- Fix de la Faux maudite du Saigneur Guerrier
+- Fix Fail Objet Vivant / Mimibiote
+- Fix IA du Bouftou
+- Fix IA du Sanglier
+
+Version 2.4 (02/08/2021) :
+
+- Fix du Bug de déclenchement des pièges quand on pousse un ennemie dessus les pièges répulsifs sont déclenchés à la fin
+- Fix : Quand on pousse un ennemi vers un piège répulsif il est maintenant correctement poussé jusqu'au piège
+- Fix des commandes joueurs : Shop / Astrub
+
+Version 2.5 (03/08/2021) :
+
+- Ajout du Contrôle d'Invocation
+- Parchemin de Sort Invocation Charferfu et Arakne vous apprennes le sort désormais
+
+Version 2.6 (30/10/2021) :
+
+- Fix contrôle d'invocation (modulable via commande)
+- Fix bug d'invisibilité
+- Fix de l'interface de vente des HDV + Achat
+
+Version 2.7 (31/10/2021) :
+
+- Fix bug d'invocation par une IA
+- Fix des recettes pour les clefs des donjons Qu'Tan et Illyzael
+- Fix du Panel de Visualisation des drops
+- Fix retirer un item de l'hdv
+
+Version 2.8 (01/11/2021):
+
+- Fix Familiers (Stats)
+
+Version 2.9 (28/11/2021):
+
+- Fix des boutons Suivant/Précédent sur un Mode Marchand
+- Fix IA Croca
+- Fix des effets visuel des raretés
+- Ajout d'un tour supplémentaire pour le gain de PA pour le rasboul
+- Fix des crafts on peut désormais craft plusieurs items sans quitter l'interface
+- Fix du craft a répétition (Quantité de craft)
+- Fix du OneWindows (Bug cac)
+- Fix des effets d'item de classe sur OneWindow
+- Fix des stats du Leader à la fin du fight
+
+Version 3.0 (29/11/2021):
+
+- Fix du bug de transpo du Kralamour
+- Fix de l'invocation des tentacules du Kralamour
+- Fix d'une exception du contrôle d'invocation
+- Fix du Sort Poisse et Brokle
+
+Version 3.1 (30/11/2021):
+
+- Fix IA CM
+- Fix bug des IA qui invoque sur elles-mêmes
+- Fix IA Minotot
+
+Version 3.2 (06/12/2021):
+
+- Isolement du Contrôle d'invocation et du OneWindow
+- Fix des exceptions en liaison avec le OneWindow et Contrôle d'Invocation
+
+Version 3.3 (07/12/2021):
+
+- Fix des Percepteurs (Attaque/Déplacement/Debuff/Soins/Malus)
+- Fix du Problème du nombre d'invocation en OneWindows
+
+Version 3.4 (08/12/2021):
+
+- Fix de l'exception d'echange PNJ on peut désormais échanger à nouveaux avec les PNJ contre des items
+- Fix de la prise en compte des stats des deux équipements maudit (Epée / Faux)
+- Ajout de la rareté quand on FM un objet (interface de FM)
+- Ajout de la rareté quand on fait un echange avec un joueur
+- Ajout de la rareté quand on regarde la liste des items d'un joueur en mode marchand
+
+Version 4 (07/12/2022):
+
+- Plein de fix
+
+Version 4.1 (08/12/2022):
+
+- Sauvegarde de Cell entre 2 fight sur la même map
+- Ajout de la gestion de commande Azuriom dans la config
+
+ARRET DU MAINTIEN DU CHANGELOG LE 08/12/2022

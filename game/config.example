@@ -1,0 +1,87 @@
+# Aegnor Game — config 1.43.7
+# Copie ce fichier en `config.properties` et adapte les valeurs.
+
+# --- Server (id/key doivent matcher la table `servers` de aegnor_login) ---
+server.id = 2
+server.key = aegnor
+# server.host = IP que le LOGIN transmettra au CLIENT pour qu'il se connecte au game.
+# Doit être l'IP joignable par le client (pas 0.0.0.0). Le bind reste sur toutes les interfaces.
+server.host = 127.0.0.1
+server.name = Aegnor
+server.version = 1.43.7
+server.port = 5555
+
+# --- Exchange (lien game <-> login) ---
+exchange.host = 127.0.0.1
+exchange.port = 6667
+
+# --- Databases (MariaDB / MySQL) ---
+database.login.host = 127.0.0.1
+database.login.port = 3306
+database.login.user = root
+database.login.pass =
+database.login.name = aegnor_login
+
+database.game.host = 127.0.0.1
+database.game.port = 3306
+database.game.user = root
+database.game.pass =
+database.game.name = aegnor_game
+
+# database.site = CMS Azuriom (activable via mode.azuriom). Laisser tel quel si non utilisé.
+database.site.host = 127.0.0.1
+database.site.port = 3306
+database.site.user = root
+database.site.pass =
+database.site.name = aegnor_web
+
+# --- Rates ---
+rate.fm = 1
+rate.percent-exo = 1
+rate.xp = 1.0
+rate.job = 1
+rate.farm = 1
+rate.honor = 1
+rate.kamas = 1
+
+# --- Prix (kamas) ---
+prix.prix-changement-classe = 1000
+prix.prix-changement-couleur = 500
+prix.prix-changement-pseudo = 500
+prix.prix-mimibiote = 500
+
+# --- Modes ---
+mode.log = true
+mode.autoClean = false
+mode.linux = false
+mode.azuriom = false
+mode.halloween = false
+mode.christmas = false
+mode.heroic = false
+mode.discordBot = false
+mode.discordWebhooks = false
+mode.hdvGlobal = false
+
+# --- Discord (désactivé par défaut - laisser vide si mode.discordBot=false) ---
+discord.key =
+discord.channelId.log = 0
+discord.channelId.command = 0
+discord.channelId.faille = 0
+discord.channelId.event = 0
+discord.channelId.info = 0
+
+# --- Options ---
+options.start.message = Bienvenue sur Aegnor !
+options.start.map = 7411
+options.start.cell = 280
+options.start.kamas = 0
+options.start.level = 1
+options.event.active = false
+options.event.timePerEvent = 0
+options.autoReboot = false
+options.encryptPacket = false
+options.deathMatch = false
+options.teamMatch = false
+options.allZaap = true
+options.allEmote = true
+options.subscription = false

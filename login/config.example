@@ -1,0 +1,24 @@
+# Aegnor Login — config 1.43.7
+# Copie ce fichier en `config.properties` et adapte les valeurs.
+
+#System
+system.server.exchange.ip 127.0.0.1
+system.server.exchange.port 6667
+
+#Login server
+# system.server.login.ip : adresse de bind du login (0.0.0.0 = toutes interfaces, 127.0.0.1 = loopback,
+# ou une IP LAN précise pour exposer le serveur sur le réseau local).
+system.server.login.ip 0.0.0.0
+system.server.login.port 1135
+system.server.login.version 1.43.7
+system.server.onlyadmin false
+
+#Database (MariaDB / MySQL)
+database.login.host 127.0.0.1
+database.login.port 3306
+database.login.user root
+database.login.pass
+database.login.name aegnor_login
+
+#Web (optionnel - URL d'un fichier IP utilisé par certains setups CMS)
+web.url http://127.0.0.1/ip.txt

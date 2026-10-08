@@ -1,0 +1,18 @@
+# Project exclude paths
+/out/
+/src/kernel/.idea/
+src/kernel/.idea/
+/.classpath/
+/classes/
+/recursos/
+/.project/
+03 - Game.iml
+Alexandria EMU.iml
+AegnorGame.iml
+config.properties
+names.txt
+
+# Build outputs
+/build/
+/Logs/
+.DS_Store

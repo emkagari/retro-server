@@ -1,0 +1,18 @@
+# artefacts de compilation
+build/
+out/
+*.class
+
+# configuration locale (contient le mot de passe de la base)
+config.properties
+game/config.properties
+login/config.properties
+
+# logs
+*.log
+logs/
+game/logs/
+login/logs/
+
+# IDE
+.idea/
