@@ -17,6 +17,8 @@ services:
         echo "downloading the kit's database (54 MB)..."
         wget -q -O /tmp/db.zip https://github.com/jguyet/kit-1.43.7/raw/main/db-1.43.7.zip
         unzip -o -j /tmp/db.zip 'db-1.43.7/*.sql' -d /dumps
+        # Written as root: left removable by anyone (Linux hosts).
+        chmod -R a+rwX /dumps
         ls -l /dumps
 
   mariadb:
