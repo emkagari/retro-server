@@ -213,6 +213,9 @@ public class Player {
     }
     //Titre
     private byte _title = 0;
+    // Dofus 2-style nameplate frame shown by the retro client (clips/ornaments/<id>.swf), 0 for none.
+    private int ornament = 0;
+    private final java.util.TreeSet<Integer> ornaments = new java.util.TreeSet<>();
     //Mariage
     private int wife = 0;
     private int _isOK = 0;
@@ -2275,7 +2278,12 @@ public class Player {
             str.append(curCell.getId()).append(";").append(_orientation).append(";");
             str.append("0").append(";");//FIXME:?
             str.append(this.getId()).append(";").append(this.getName()).append(";").append(this.getClasse());
-            str.append((this.get_title() > 0 ? ("," + this.get_title() + ";") : (";")));
+            // class[,title[,ornament]]: clients without ornaments ignore the third field.
+            if (this.get_title() > 0 || ornament > 0)
+                str.append(",").append(this.get_title() > 0 ? String.valueOf(this.get_title()) : "");
+            if (ornament > 0)
+                str.append(",").append(ornament);
+            str.append(";");
             int gfx = gfxId;
             if (this.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF) != null)
                 if (this.getObjetByPos(Constant.ITEM_POS_ROLEPLAY_BUFF).getTemplate().getId() == 10681)
@@ -5344,6 +5352,45 @@ public class Player {
 
     public void set_isClone(boolean isClone) {
         _isClone = isClone;
+    }
+
+    public int getOrnament() {
+        return ornament;
+    }
+
+    public void setOrnament(int ornament) {
+        this.ornament = ornament;
+    }
+
+    public void loadOrnaments(int selected, String owned) {
+        ornaments.clear();
+        if (owned != null)
+            for (String id : owned.split(","))
+                if (!id.isEmpty())
+                    ornaments.add(Integer.parseInt(id));
+        ornament = canUseOrnament(selected) ? selected : 0;
+    }
+
+    public String parseOrnamentsToDB() {
+        StringBuilder str = new StringBuilder();
+        for (int id : ornaments)
+            str.append(str.length() > 0 ? "," : "").append(id);
+        return str.toString();
+    }
+
+    // Staff members (a non-player group) get every ornament.
+    public java.util.Set<Integer> getAvailableOrnaments() {
+        if (this.getGroupe() != null && !this.getGroupe().isPlayer())
+            return client.other.Ornaments.ALL;
+        return java.util.Collections.unmodifiableSet(ornaments);
+    }
+
+    public boolean canUseOrnament(int id) {
+        return id == 0 || getAvailableOrnaments().contains(id);
+    }
+
+    public boolean addOrnament(int id) {
+        return client.other.Ornaments.exists(id) && ornaments.add(id);
     }
 
     public byte get_title() {

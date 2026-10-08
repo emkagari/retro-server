@@ -3523,6 +3523,33 @@ public class CommandAdmin extends AdminUser {
             if (perso.getFight() == null)
                 SocketManager.GAME_SEND_ALTER_GM_PACKET(perso.getCurMap(), perso);
             return;
+        } else if (command.equalsIgnoreCase("ORNEMENT"))
+        {
+            Player perso = this.getPlayer();
+            int ornament = 0;
+            try {
+                ornament = Integer.parseInt(infos[1]);
+                if (infos.length > 2)
+                    perso = World.world.getPlayerByName(infos[2]);
+            } catch (Exception e) {
+                // ok
+            }
+            if (perso == null) {
+                this.sendMessage("Personnage introuvable.");
+                return;
+            }
+            // Gives the ornament if needed, then shows it; 0 takes it off.
+            if (ornament != 0 && !client.other.Ornaments.exists(ornament)) {
+                this.sendMessage("L'ornement " + ornament + " n'existe pas.");
+                return;
+            }
+            perso.addOrnament(ornament);
+            perso.setOrnament(ornament);
+            Database.getStatics().getPlayerData().updateOrnaments(perso);
+            this.sendMessage("Ornement " + ornament + " pour " + perso.getName() + ".");
+            if (perso.getFight() == null)
+                SocketManager.GAME_SEND_ALTER_GM_PACKET(perso.getCurMap(), perso);
+            return;
         } else if (command.equalsIgnoreCase("POINTS"))
         {
             int count = 0;

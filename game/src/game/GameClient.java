@@ -218,6 +218,9 @@ public class GameClient {
             case 'K':
                 parseHouseKodePacket(packet);
                 break;
+            case 'n':
+                parseNameCustomizationPacket(packet);
+                break;
             case 'O':
                 parseObjectPacket(packet);
                 break;
@@ -744,6 +747,47 @@ public class GameClient {
                 setTitre(packet.substring(2));
                 break;
         }
+    }
+
+    // Ornaments: nO asks for the list, no<id> shows one (0: none).
+    private void parseNameCustomizationPacket(String packet) {
+        if (this.player == null || packet.length() < 2)
+            return;
+        switch (packet.charAt(1)) {
+            case 'O':
+                sendOrnaments();
+                break;
+            case 'o':
+                int id;
+                try {
+                    id = Integer.parseInt(packet.substring(2));
+                } catch (NumberFormatException e) {
+                    return;
+                }
+                if (id < 0)
+                    id = 0;
+                if (!this.player.canUseOrnament(id))
+                    return;
+                this.player.setOrnament(id);
+                Database.getStatics().getPlayerData().updateOrnaments(this.player);
+                if (this.player.getFight() == null)
+                    SocketManager.GAME_SEND_ALTER_GM_PACKET(this.player.getCurMap(), this.player);
+                sendOrnaments();
+                break;
+        }
+    }
+
+    // nO<shown>|<id>,<id>,...
+    private void sendOrnaments() {
+        StringBuilder str = new StringBuilder("nO").append(this.player.getOrnament()).append('|');
+        boolean first = true;
+        for (int id : this.player.getAvailableOrnaments()) {
+            if (!first)
+                str.append(',');
+            str.append(id);
+            first = false;
+        }
+        SocketManager.send(this, str.toString());
     }
 
     private void showMerchant(String packet) {

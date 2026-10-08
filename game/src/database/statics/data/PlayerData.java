@@ -74,6 +74,8 @@ public class PlayerData extends AbstractDAO<Player> {
 
                     try { perso.parseInventoryShortcuts(RS.getString("inventory_shortcuts")); }
                     catch (SQLException ignored) {}
+                    try { perso.loadOrnaments(RS.getInt("ornament"), RS.getString("ornaments")); }
+                    catch (SQLException ignored) {}
                     World.world.addPlayer(perso);
                     if (perso.isShowSeller())
                         World.world.addSeller(perso);
@@ -131,6 +133,8 @@ public class PlayerData extends AbstractDAO<Player> {
                     // Inventory shortcuts (1.43.7) — colonne optionnelle, on protège des
                     // anciennes DB sans cette colonne.
                     try { player.parseInventoryShortcuts(RS.getString("inventory_shortcuts")); }
+                    catch (SQLException ignored) {}
+                    try { player.loadOrnaments(RS.getInt("ornament"), RS.getString("ornaments")); }
                     catch (SQLException ignored) {}
                     World.world.addPlayer(player);
                     int guild = Database.getDynamics().getGuildMemberData().isPersoInGuild(RS.getInt("id"));
@@ -197,6 +201,8 @@ public class PlayerData extends AbstractDAO<Player> {
 
                     player.VerifAndChangeItemPlace();
                     try { player.parseInventoryShortcuts(RS.getString("inventory_shortcuts")); }
+                    catch (SQLException ignored) {}
+                    try { player.loadOrnaments(RS.getInt("ornament"), RS.getString("ornaments")); }
                     catch (SQLException ignored) {}
                     World.world.addPlayer(player);
                     int guild = Database.getDynamics().getGuildMemberData().isPersoInGuild(RS.getInt("id"));
@@ -445,6 +451,18 @@ public class PlayerData extends AbstractDAO<Player> {
             executeUpdate(p);
         } catch (SQLException e) {
             sendError("PlayerData updateTimeDeblo", e);
+        }
+    }
+
+    public void updateOrnaments(Player player) {
+        String query = "UPDATE players SET `ornament` = ?, `ornaments` = ? WHERE `id` = ?";
+        try (Connection conn = dataSource.getConnection() ; PreparedStatement p = conn.prepareStatement(query) ) {
+            p.setInt(1, player.getOrnament());
+            p.setString(2, player.parseOrnamentsToDB());
+            p.setInt(3, player.getId());
+            executeUpdate(p);
+        } catch (SQLException e) {
+            sendError("PlayerData updateOrnaments", e);
         }
     }
 
