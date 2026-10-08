@@ -130,7 +130,7 @@ class AccountQueue {
         client.send("Af0|0|0|1|-1");
         client.send("Ad" + account.getPseudo());
         client.send("Ac0");
-        client.send(Server.getHostList());
+        client.send(Server.getHostList(client.getClientVersion()));
         client.send("AlK" + (account.isMj() ? 1 : 0)); // packet mj ou non ! :)
         if (account.isMj())
             Console.instance.write("[" + client.getIoSession().getId() + "] The account have a GM Player.");

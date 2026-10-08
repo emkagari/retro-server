@@ -27,6 +27,10 @@ public class PacketHandler {
                             server.setIp(s[0]);
                             server.setPort(Integer.parseInt(s[1]));
                             client.send("SHK#");
+                            // The game sends its state ("SS1") once, at startup — possibly before
+                            // this link exists (login restarted, game started first): a game that
+                            // completes the handshake is running, so it isn't listed offline.
+                            if (server.getState() == 0) server.setState(1);
                             break;
 
                         case 'K': // Key
