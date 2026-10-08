@@ -200,6 +200,53 @@ public class MapData extends AbstractDAO<GameMap> {
         return false;
     }
 
+    /**
+     * Recharge UNE map deja en memoire depuis sa ligne, cellules comprises.
+     *
+     * `reload()` existait deja mais ne rappelle que `setInfos` : date, monstres,
+     * tailles de groupe. Editer le decor ou la praticabilite d'une cellule ne
+     * changeait donc rien en jeu tant qu'on n'avait pas redemarre le serveur.
+     *
+     * Rend true si la ligne existait et a ete appliquee.
+     */
+    public boolean reloadGeometry(GameMap map) {
+        Result result = null;
+        try {
+            result = getData("SELECT * FROM maps WHERE id = " + map.getId());
+            ResultSet RS = result.resultSet;
+            if (!RS.next()) return false;
+            map.reloadGeometry(RS.getString("date"), RS.getByte("width"), RS.getByte("heigth"),
+                    RS.getString("key"), RS.getString("places"), RS.getString("mapData"),
+                    RS.getByte("sniffed"), RS.getShort("capabilities"), RS.getInt("musicID"),
+                    RS.getInt("ambianceID"), RS.getInt("bgID"), RS.getInt("outDoor"));
+            return true;
+        } catch (SQLException e) {
+            super.sendError("MapData reloadGeometry", e);
+            return false;
+        } finally {
+            close(result);
+        }
+    }
+
+    /** Ré-applique les groupes fixes de `mobgroups_fix` pour cette seule map. */
+    public void reloadFixedGroups(GameMap map) {
+        Result result = null;
+        try {
+            result = getData("SELECT * FROM mobgroups_fix WHERE mapid = " + map.getId());
+            ResultSet RS = result.resultSet;
+            while (RS.next()) {
+                if (map.getCase(RS.getInt("cellid")) == null) continue;
+                map.addStaticGroup(RS.getInt("cellid"), RS.getString("groupData"), false);
+                World.world.addGroupFix(RS.getInt("mapid") + ";" + RS.getInt("cellid"),
+                        RS.getString("groupData"), RS.getInt("Timer"));
+            }
+        } catch (SQLException e) {
+            super.sendError("MapData reloadFixedGroups", e);
+        } finally {
+            close(result);
+        }
+    }
+
     public void load() {
         Result result = null;
         try {

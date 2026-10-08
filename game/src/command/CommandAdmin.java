@@ -3200,6 +3200,92 @@ public class CommandAdmin extends AdminUser {
             World.world.reloadMaps();
             this.sendMessage("Le rechargement des maps a ete effectue.");
             return;
+        } else if (command.equalsIgnoreCase("RELOADCELLS"))
+        {
+            /*
+             * Recharge VRAIMENT une map : cellules, dimensions, cle, places.
+             *
+             * `.reloadmap` ne fait qu'appeler `MapData.reload`, qui se limite a
+             * `setInfos` — date, monstres, tailles de groupe. Editer le decor ou
+             * la praticabilite d'une cellule ne changeait donc rien en jeu tant
+             * qu'on n'avait pas redemarre le serveur entier.
+             *
+             *   .reloadcells            la map ou l'on se trouve
+             *   .reloadcells 7411 7412  celles-ci
+             */
+            java.util.List<Integer> cibles = new java.util.ArrayList<>();
+            if (infos.length > 1) {
+                for (int i = 1; i < infos.length; i++) {
+                    try { cibles.add(Integer.parseInt(infos[i].trim())); }
+                    catch (NumberFormatException e) {
+                        this.sendErrorMessage("« " + infos[i] + " » n'est pas un numero de map.");
+                        return;
+                    }
+                }
+            } else if (this.getPlayer() != null && this.getPlayer().getCurMap() != null) {
+                cibles.add((int) this.getPlayer().getCurMap().getId());
+            }
+            if (cibles.isEmpty()) { this.sendErrorMessage("Aucune map a recharger."); return; }
+
+            int faites = 0, absentes = 0, refusees = 0;
+            StringBuilder detail = new StringBuilder();
+            for (int id : cibles) {
+                GameMap map = World.world.getMap((short) id);
+                if (map == null) {
+                    absentes++;
+                    detail.append(' ').append(id).append("(inconnue)");
+                    continue;
+                }
+                // Un combat en cours tient des references sur les cellules
+                // actuelles : les reconstruire sous ses pieds le casserait.
+                if (map.getFights() != null && !map.getFights().isEmpty()) {
+                    refusees++;
+                    detail.append(' ').append(id).append("(combat)");
+                    continue;
+                }
+
+                // On note qui est la AVANT : la liste des joueurs est portee par
+                // les cellules, qui vont etre remplacees.
+                java.util.List<int[]> presents = new java.util.ArrayList<>();
+                for (Player p : new java.util.ArrayList<>(map.getPlayers())) {
+                    if (p == null || p.getGameClient() == null) continue;
+                    presents.add(new int[]{ p.getId(),
+                            p.getCurCell() == null ? -1 : p.getCurCell().getId() });
+                }
+
+                if (!Database.getDynamics().getMapData().reloadGeometry(map)) {
+                    absentes++;
+                    detail.append(' ').append(id).append("(absente en base)");
+                    continue;
+                }
+                // Tout ce qui etait pose SUR les cellules est parti avec elles.
+                Database.getDynamics().getScriptedCellData().loadForMap((short) id);
+                Database.getDynamics().getMapData().reloadFixedGroups(map);
+                map.refreshSpawns();
+
+                // Les joueurs pointent encore sur des cellules mortes : on les
+                // repose. `teleportD` renvoie aussi le GDM, donc le client
+                // redessine la map sans avoir a se reconnecter.
+                for (int[] pc : presents) {
+                    Player p = World.world.getPlayer(pc[0]);
+                    if (p == null || !p.isOnline()) continue;
+                    int cell = pc[1];
+                    if (cell < 0 || map.getCase(cell) == null) {
+                        // La map a pu retrecir : on repose sur la premiere
+                        // cellule existante plutot que nulle part.
+                        cell = -1;
+                        for (int c = 0; c < 600 && cell < 0; c++)
+                            if (map.getCase(c) != null) cell = c;
+                    }
+                    if (cell >= 0) p.teleportD((short) id, cell);
+                }
+                faites++;
+            }
+            this.sendSuccessMessage(faites + " map(s) rechargee(s)"
+                    + (absentes > 0 ? ", " + absentes + " absente(s)" : "")
+                    + (refusees > 0 ? ", " + refusees + " en combat" : "")
+                    + (detail.length() > 0 ? " —" + detail : ""));
+            return;
         } else if (command.equalsIgnoreCase("RELOADMOUNTPARK"))
         {
             int i = Integer.parseInt(infos[1]);

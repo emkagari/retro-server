@@ -240,6 +240,57 @@ public class GameMap {
         }
     }
 
+    /**
+     * Recharge la GEOMETRIE de la map depuis une ligne de `maps`, SUR PLACE.
+     *
+     * On ne fabrique surtout pas un nouveau GameMap : les PNJ, les groupes de
+     * monstres, la maison, le prisme, le percepteur, l'enclos, les marchands et
+     * les combats vivent sur CET objet, et la sous-zone tient une reference
+     * dessus (le constructeur ferait meme un second `subArea.addMap`). On se
+     * contente donc de remplacer ce qui vient reellement de l'editeur : les
+     * cellules, les dimensions, la cle, les places de combat, l'ambiance.
+     *
+     * Les groupes de monstres et les PNJ ne retiennent qu'un numero de cellule,
+     * pas la GameCase elle-meme : ils survivent tels quels. Ce qui est porte par
+     * la cellule — les actions de `scripted_cells` — est perdu ici et doit etre
+     * ré-appliqué par l'appelant.
+     */
+    public void reloadGeometry(String date, byte w, byte h, String key, String places,
+                               String dData, byte sniffed, short capabilities,
+                               int musicID, int ambianceID, int backgroundID, int outDoor) {
+        this.date = date;
+        this.w = w;
+        this.h = h;
+        this.key = key;
+        this.placesStr = places;
+
+        if (key.length() > 0) {
+            try {
+                this.mapData = CryptManager.decryptMapData(dData, key);
+            } catch (Exception e) {
+                System.out.println("Impossible de déchiffrer la map, clé incorrecte ou map déjà déchiffrée:" + this.id + " / " + e.getMessage());
+                this.mapData = dData;
+            }
+        } else {
+            this.mapData = dData;
+        }
+
+        this.capabilities = capabilities;
+        this.musicID = musicID;
+        this.ambianceID = ambianceID;
+        this.backgroundID = backgroundID;
+        this.outDoor = outDoor;
+        this.cases = World.world.getCryptManager().decompileMapData(this, this.mapData, sniffed);
+
+        this.maxTeam = 0;
+        try {
+            if (!places.equalsIgnoreCase("") && !places.equalsIgnoreCase("|"))
+                this.maxTeam = (places.split("\\|")[1].length() / 2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public GameMap(short id, String date, byte w, byte h, String key, String places) {
         this.id = id;
         this.date = date;
