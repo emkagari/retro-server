@@ -10,6 +10,7 @@ and database as published; each addition is a commit of its own:
 | Docker stack | database, login and game servers in containers; the kit's database downloaded and imported on first start |
 | 1.49.5 client | the login accepts it and sends the server list in its format; its lang files carry this server's world (`data/lang`), with the maps it lacks (`data/maps`) |
 | map fixes | 554 of the kit's maps whose key or data didn't decode into a consistent map, corrected (`db-init/03-map-fixes.sql`) |
+| 1.49.5 maps | the 74 maps the 1.49.5 client has and the kit's database lacks (`db-init/04-maps-149.sql`) |
 | `RELOADCELLS` | reloads an edited map's cells from the database without a restart |
 | fixes | watching a fight from the map's fight list; spell areas no longer wrap past a map edge |
 | ornaments | Dofus 2-style nameplate frames, for retro-client's ornaments |
