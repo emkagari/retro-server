@@ -1,0 +1,64 @@
+<config>
+
+    <!--
+      The Retro client's config.xml for this server: copy it over
+      resources/app/retroclient/config.xml (retro-client: put it in your local
+      overlay, at resources/app/retroclient/config.xml).
+
+      - one launcher, port 0: ZaapConnect stays off, the client asks for an
+        account and a password instead of a launcher token;
+      - connserver url: the login server's host; its port comes from <ports>;
+      - dataservers: this server's /dofus149/ first (lang files and the maps the
+        1.49.5 client lacks), then the client's own data/.
+    -->
+
+    <delay value="500"/>
+    <rdelay value="3000"/>
+    <rcount value="10"/>
+
+    <launchers>
+        <launcher name="Local" port="0"/>
+    </launchers>
+
+    <connservers>
+        <connserver name="Local" url="127.0.0.1"/>
+    </connservers>
+
+    <ports>
+        <port value="1135"/>
+    </ports>
+
+    <clientdata>
+        <environment name="Local">
+            <databank id="0">
+                <dataserver url="http://localhost:4545/dofus149/" priority="3"/>
+                <dataserver url="data/" type="local" priority="1"/>
+            </databank>
+        </environment>
+    </clientdata>
+
+    <cacheasbitmap>
+        <cache element="ExternalContainer/InteractionCell" value="true"/>
+        <cache element="ExternalContainer/Ground" value="true"/>
+        <cache element="ExternalContainer/Object1" value="true"/>
+        <cache element="ExternalContainer/Object2" value="true"/>
+        <cache element="ExternalContainer/Zone" value="true"/>
+        <cache element="ExternalContainer/Select" value="false"/>
+        <cache element="ExternalContainer/Grid" value="true"/>
+        <cache element="ExternalContainer/Pointer" value="true"/>
+        <cache element="GAPI/UI" value="false"/>
+        <cache element="GAPI/UITop" value="false"/>
+        <cache element="GAPI/Popup" value="false"/>
+        <cache element="GAPI/UIUltimate" value="false"/>
+        <cache element="GAPI/Cursor" value="true"/>
+        <cache element="mapHandler/BACKGROUND" value="false"/>
+        <cache element="mapHandler/Cell/Ground" value="false"/>
+        <cache element="mapHandler/Cell/Object1" value="false"/>
+        <cache element="mapHandler/Cell/Object2" value="false"/>
+        <cache element="mapHandler/Cell/ObjectExternal" value="false"/>
+        <cache element="Zone/Zone" value="true"/>
+        <cache element="Zone/Pointers" value="true"/>
+        <cache element="Controls/Loader" value="false" />
+    </cacheasbitmap>
+
+</config>

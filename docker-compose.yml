@@ -1,4 +1,5 @@
-# Aegnor: the database, the login and game servers.
+# Aegnor for the Retro client: the database, the login and game servers, and
+# the client's data server.
 # `cp .env.example .env`, then `docker compose up -d`.
 services:
   # The kit's database dumps, downloaded once into db-init/dumps.
@@ -63,6 +64,16 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./docker/game.config.properties:/app/config.template:ro
+
+  # The client's data server: the 1.49.5 lang files with this server's world,
+  # and the maps the 1.49.5 client lacks (data/, docker/weblang.conf).
+  weblang:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports: ["127.0.0.1:${LANG_PORT:-4545}:80"]
+    volumes:
+      - ./docker/weblang.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./data:/srv/data:ro
 
 volumes:
   db:
