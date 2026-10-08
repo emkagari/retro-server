@@ -2056,6 +2056,27 @@ public class PathFinding {
         return allCases;
     }
 
+    /**
+     * One step in a direction, or {@code -1} when the step leaves the board.
+     *
+     * <p>{@link #GetCaseIDFromDirrection} only adds an offset to the identifier.
+     * At the end of a row that offset names a perfectly live cell on the far
+     * side of the map, so a cross or a line cast near an edge used to strike
+     * cells nowhere near it. {@code Function.testCotes} guards against exactly
+     * this, but is only ever called from the movement code.
+     *
+     * <p>Checking the coordinates costs two subtractions and closes the hole.
+     */
+    public static int stepOrOffBoard(int cellID, char direction, GameMap map) {
+        int next = GetCaseIDFromDirrection(cellID, direction, map, true);
+        if (next < 0 || map.getCase(next) == null) {
+            return -1;
+        }
+        int dx = Math.abs(getCellXCoord(map, next) - getCellXCoord(map, cellID));
+        int dy = Math.abs(getCellYCoord(map, next) - getCellYCoord(map, cellID));
+        return (dx + dy == 1) ? next : -1;
+    }
+
     public static ArrayList<GameCase> getCellListFromAreaString(GameMap map,
                                                             int cellID, int castCellID, String zoneStr) {
         ArrayList<GameCase> cases = new ArrayList<GameCase>();
@@ -2078,8 +2099,11 @@ public class PathFinding {
                 for (char d : dirs) {
                     int cID = cellID;
                     for (int a = 0; a < taille; a++) {
-                        cases.add(map.getCase(GetCaseIDFromDirrection(cID, d, map, true)));
-                        cID = GetCaseIDFromDirrection(cID, d, map, true);
+                        int next = stepOrOffBoard(cID, d, map);
+                        if (next == -1)
+                            break;
+                        cases.add(map.getCase(next));
+                        cID = next;
                     }
                 }
                 break;
@@ -2177,8 +2201,11 @@ public class PathFinding {
                 cases.add(map.getCase(cellID));
                 char dir = PathFinding.getDirBetweenTwoCase(castCellID, cellID, map, true);
                 for (int a = 0; a < taille; a++) {
-                    cases.add(map.getCase(GetCaseIDFromDirrection(cellID, dir, map, true)));
-                    cellID = GetCaseIDFromDirrection(cellID, dir, map, true);
+                    int next = stepOrOffBoard(cellID, dir, map);
+                    if (next == -1)
+                        break;
+                    cases.add(map.getCase(next));
+                    cellID = next;
                 }
                 break;
 

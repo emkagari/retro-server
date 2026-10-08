@@ -5925,6 +5925,14 @@ public class GameClient {
                 gameJoinFight(packet);
                 break;
 
+            // Watch a fight: what the 1.43 client sends from the map's fight
+            // list (GameActions.joinChallengeAsSpectator, "fightId;-1"). The
+            // older protocol this server was written for spectated through
+            // 903, so 976 went unanswered and the button did nothing.
+            case 976:
+                gameWatchFight(packet);
+                break;
+
             case 906://Agresser
                 if (Main.INSTANCE.getFightAsBlocked())
                     return;
@@ -6313,6 +6321,21 @@ public class GameClient {
             this.player.setAway(false);
             this.player.setDuelId(-1);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void gameWatchFight(String packet) {
+        if (this.player.getFight() != null || this.player.isDead() == 1) {
+            return;
+        }
+        try {
+            int fightId = Integer.parseInt(packet.substring(5).split(";")[0]);
+            Fight fight = this.player.getCurMap().getFight(fightId);
+            if (fight != null) {
+                fight.joinAsSpectator(this.player);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
