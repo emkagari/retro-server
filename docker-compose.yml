@@ -51,9 +51,10 @@ services:
     volumes:
       - ./docker/login.config.properties:/app/config.template:ro
     # The login's console reads stdin in a loop that swallows end-of-file: with
-    # stdin closed it spins at 100 % of a core. Open, it blocks as intended
-    # (and `docker compose attach login` gives the console).
+    # stdin closed it spins at 100 % of a core. Open (and a terminal), it blocks
+    # as intended, and `docker compose attach login` gives the console.
     stdin_open: true
+    tty: true
 
   game:
     build: { context: ., dockerfile: docker/game.Dockerfile }
@@ -66,6 +67,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./docker/game.config.properties:/app/config.template:ro
+    # Like the login: a console that never sees end-of-file.
+    stdin_open: true
+    tty: true
 
   # The client's data server: the 1.49.5 lang files with this server's world,
   # and the maps the 1.49.5 client lacks (data/, docker/weblang.conf).
