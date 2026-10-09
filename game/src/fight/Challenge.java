@@ -87,13 +87,12 @@ public class Challenge {
 
     public String parseToPacket() {
         StringBuilder packet = new StringBuilder();
-        packet.append(Type).append(";").append(_cible != null ? "1" : "0").append(";").append(_cible != null ? (Integer.valueOf(_cible.getId())) : "").append(";").append(xpWin).append(";0;").append(dropWin).append(";0;");
-        if (!challengeAlive) {
-            if (challengeWin)
-                packet.append("").append(Type);
-            else
-                packet.append("").append(Type);
-        }
+        // The 1.49.5 client's Gd: id;showTarget;targetId;category;state;xp;teamXp;drop;teamDrop.
+        // Category 0: a fight challenge (orange). State: 0 running, 1 won, 2 failed.
+        int state = challengeAlive ? 0 : (challengeWin ? 1 : 2);
+        packet.append(Type).append(";").append(_cible != null ? "1" : "0").append(";").append(_cible != null ? (Integer.valueOf(_cible.getId())) : "").append(";");
+        packet.append("0;").append(state).append(";");
+        packet.append(xpWin).append(";0;").append(dropWin).append(";0");
         return packet.toString();
     }
 
