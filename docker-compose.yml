@@ -71,8 +71,8 @@ services:
     stdin_open: true
     tty: true
 
-  # The client's data server: the 1.49.5 lang files with this server's world,
-  # and the maps the 1.49.5 client lacks (data/, docker/weblang.conf).
+  # The client's data server: the 1.49.6 lang files with this server's world,
+  # and the maps the 1.49.6 client lacks (data/, docker/weblang.conf).
   weblang:
     image: nginx:alpine
     restart: unless-stopped

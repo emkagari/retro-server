@@ -1,11 +1,7 @@
 package org.starloco.locos.object;
 
 import org.starloco.locos.exchange.ExchangeClient;
-import org.apache.mina.core.session.IoSession;
-import org.starloco.locos.kernel.Config;
-import org.starloco.locos.login.LoginClient;
 import org.starloco.locos.login.LoginHandler;
-import org.starloco.locos.login.LoginServer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,46 +34,18 @@ public class Server {
     }
 
     private static void sendHostListToAll() {
-        LoginServer login = Config.loginServer;
-        if (login == null) return;
-        for (LoginClient client : login.getClients().values()) {
-            if (client == null) continue;
-            IoSession session = client.getIoSession();
-            if (session != null && (session.isConnected() || !session.isClosing()))
-                client.send(getHostList(client.getClientVersion()));
-        }
-    }
-
-    /** 1.43 format. */
-    public static String getHostList() {
-        return getHostList(null);
+        LoginHandler.sendToAll(getHostList());
     }
 
     /**
-     * "AH" + servers ("id;state;completion;canLog"), the 1.43 format. Newer
-     * clients (1.49.5 at least) read a flag first — "isCoLimited" — then the
-     * servers with a 5th field, "isLimited": "AH0|id;state;110;1;0". Given the
-     * 1.43 format, they take the first server for that flag and list none.
+     * The server list, as the Retro client reads it: a flag first
+     * ("isCoLimited"), then "id;state;completion;canLog;isLimited" per server.
      */
-    public static String getHostList(String clientVersion) {
-        boolean newer = isNewerThan143(clientVersion);
-        StringBuilder sb = new StringBuilder(newer ? "AH0" : "AH");
+    public static String getHostList() {
+        StringBuilder sb = new StringBuilder("AH0");
         Server.servers.values().stream().filter(server -> server != null).forEach(server ->
-                sb.append(sb.length() > 2 ? "|" : "").append(server.getId()).append(";").append(server.getState())
-                  .append(";110;1").append(newer ? ";0" : ""));
+                sb.append("|").append(server.getId()).append(";").append(server.getState()).append(";110;1;0"));
         return sb.toString();
-    }
-
-    /** "1.49.5e" → true, "1.43.7" → false; unknown → false (the server's own format). */
-    private static boolean isNewerThan143(String version) {
-        if (version == null) return false;
-        String[] p = version.replaceAll("[^0-9.]", "").split("\\.");
-        try {
-            int major = Integer.parseInt(p[0]), minor = p.length > 1 ? Integer.parseInt(p[1]) : 0;
-            return major > 1 || (major == 1 && minor > 43);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            return false;
-        }
     }
 
     public int getId() {

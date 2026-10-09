@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Rebuilds data/lang: the official 1.49.5 lang files, with this server's world.
+# Rebuilds data/lang: the official 1.49.6 lang files, with this server's world.
 #
 #   CLIENT143=<1.43 client>/resources/app/retroclient tools/lang149/build.sh
 #
-# Downloads Ankama's 1.49.5 files (what's missing), then patch.mjs brings in
+# Downloads Ankama's 1.49.6 files (what's missing), then patch.mjs brings in
 # what the 1.43 lang files say: this server in `servers`, the maps, areas and
 # sub-areas the server knows in `maps`, its hints in `hints`. Patched files get
 # the official number + 1, and versions_<lang>.txt / versions.swf point at them.
@@ -22,7 +22,7 @@ fetch() { # url dest: skips what's already there
   curl -sf --retry 3 -o "$2.part" "$1" && mv "$2.part" "$2" || { echo "  ! $1"; rm -f "$2.part"; return 1; }
 }
 
-echo "== official 1.49.5 lang files from $CDN"
+echo "== official lang files from $CDN"
 fetch "$CDN/versions.swf" "$OUT/versions.official.swf"
 for l in $LANGS; do
   fetch "$CDN/versions_$l.txt" "$OUT/versions_$l.official.txt"

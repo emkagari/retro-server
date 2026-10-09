@@ -9,7 +9,7 @@
         account and a password instead of a launcher token;
       - connserver url: the login server's host; its port comes from <ports>;
       - dataservers: this server's /dofus149/ first (lang files and the maps the
-        1.49.5 client lacks), then the client's own data/.
+        1.49.6 client lacks), then the client's own data/.
     -->
 
     <delay value="500"/>

@@ -114,7 +114,7 @@ public class Config {
                 .append("#Login server\n")
                 .append(Params.LOGIN_IP + " 0.0.0.0\n")
                 .append(Params.PORT + " 450\n")
-                .append(Params.VERSION + " 1.43.7\n")
+                .append(Params.VERSION + " 1.49.6\n")
                 .append("\n")
                 .append(Params.LOGIN_DB_HOST + " 127.0.0.1\n")
                 .append(Params.LOGIN_DB_PORT + " 3306\n")
