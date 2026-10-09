@@ -98,6 +98,7 @@ public class Main {
     private void closeServer() {
         if (Config.INSTANCE.isRunning()) {
             GameServer.INSTANCE.setState(0);
+            GameServer.INSTANCE.notifyClosing();
             GameServer.INSTANCE.kickAll(true);
             WorldSave.cast(0);
             if (!Config.INSTANCE.getHEROIC()) {
@@ -116,6 +117,7 @@ public class Main {
     private void closeServerForPlayers() {
         if (Config.INSTANCE.isRunning()) {
             GameServer.INSTANCE.setState(0);
+            GameServer.INSTANCE.notifyClosing();
             Config.INSTANCE.setRunning(true);
             GameServer.INSTANCE.kickAll(true);
             WorldSave.cast(0);

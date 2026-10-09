@@ -9347,8 +9347,9 @@ public class GameClient {
      */
 
     public void kick() {
+        // Once what was sent before leaves (a message, the closing notice).
         if(this.session.isConnected())
-            this.session.closeNow();
+            this.session.closeOnFlush();
         if (this.account != null && this.player != null)
             this.account.disconnect(this.player);
     }

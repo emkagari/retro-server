@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import client.Account;
 import client.Player;
 import com.sun.istack.NotNull;
+import common.SocketManager;
 import database.Database;
 import exchange.ExchangeClient;
 import game.scheduler.entity.WorldSave;
@@ -152,6 +153,23 @@ public class GameServer {
 
     public static void a(String err) {
         log.warn("Unexpected behaviour detected : "+ err);
+    }
+
+    /**
+     * Tells every connected client the server is going away ("k"): when the
+     * connection then closes, the client goes back to its login screen quietly
+     * instead of reporting a lost connection or trying to reconnect.
+     */
+    public void notifyClosing() {
+        for (GameClient client : getClients()) {
+            if (client != null)
+                SocketManager.send(client, "k");
+        }
+        try {
+            Thread.sleep(500); // for the packets to leave before the sockets close
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void kickAll(boolean kickGm) {
