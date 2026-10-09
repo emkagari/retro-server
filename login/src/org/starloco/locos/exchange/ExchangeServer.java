@@ -55,8 +55,8 @@ public class ExchangeServer {
                 IoSession session = entry.getValue();
                 if (session == null)
                     continue;
-                if (session.getAttribute("client") instanceof ExchangeClient) {
-                    ExchangeClient client = (ExchangeClient) session.getAttribute("client");
+                if (session.getAttachment() instanceof ExchangeClient) {
+                    ExchangeClient client = (ExchangeClient) session.getAttachment();
                     if (client == null)
                         continue;
                     clients.put(id, client);

@@ -34,6 +34,9 @@ public class ExchangePacketHandler {
                                 switch (packet.charAt(2)) {
                                     case 'K': //Ok
                                         ExchangeClient.logger.info("The login server has validated the connection.");
+                                        // The state on every new link, not only at startup: a
+                                        // login that restarted would list this server offline.
+                                        ExchangeClient.INSTANCE.send("SS" + GameServer.INSTANCE.getState());
                                         break;
                                 }
                                 break;

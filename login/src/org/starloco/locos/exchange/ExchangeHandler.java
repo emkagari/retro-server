@@ -53,9 +53,16 @@ class ExchangeHandler implements IoHandler {
     @Override
     public void sessionClosed(IoSession arg0) throws Exception {
         Console.instance.write("eSession " + arg0.getId() + " closed");
-        if (arg0.getAttribute("client") instanceof ExchangeClient) {
-            ExchangeClient client = (ExchangeClient) arg0.getAttribute("client");
-            client.getServer().setState(0);
+        // The client is the session's attachment (sessionCreated), not an
+        // attribute: looked up there, a game server that left was never listed
+        // offline. A server already linked again (quick restart) stays online.
+        if (arg0.getAttachment() instanceof ExchangeClient) {
+            ExchangeClient client = (ExchangeClient) arg0.getAttachment();
+            Server server = client.getServer();
+            if (server != null && server.getClient() == client) {
+                server.setClient(null);
+                server.setState(0);
+            }
         }
         this.setLogged(arg0, "sessionClosed");
     }
