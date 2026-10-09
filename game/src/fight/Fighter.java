@@ -1352,13 +1352,7 @@ public class Fighter implements Comparable<Fighter> {
                 str.append(getPdv()).append(";");
                 str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PA)).append(";");
                 str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PM)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_NEU)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_TER)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_FEU)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_EAU)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_AIR)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_AFLEE) ).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_MFLEE) ).append(";");
+                str.append(resistances()).append(";");
                 str.append(this.team).append(";");
                 if (this.perso.isOnMount() && this.perso.getMount() != null)
                     str.append(this.perso.getMount().getStringColor(this.perso.parsecolortomount()));
@@ -1377,21 +1371,29 @@ public class Fighter implements Comparable<Fighter> {
                     str.append("0,2BA,847,0;");
                 else
                     str.append("0,0,0,0;");
-                str.append(this.getPdvMax()).append(";");
+                str.append(getPdv()).append(";");
                 str.append(this.mob.getPa()).append(";");
                 str.append(this.mob.getPm()).append(";");
-                str.append(this.mob.getResiString()).append(";");
-                str.append(this.team);
+                str.append(resistances()).append(";");
+                str.append(isInvocation() ? 1 : 0).append(";");
+                str.append(this.team).append(";");
+                str.append(getPdvMax());
                 break;
             case 5://Perco
                 str.append("-6;");//Perco
                 str.append("6000^100;");//GFXID^Size
                 Guild G = World.world.getGuild(this.collector.getGuildId());
                 str.append(G.getLvl()).append(";");
-                str.append("1;");
-                str.append("2;4;");
-                str.append((int) Math.floor(G.getLvl() / 2)).append(";").append((int) Math.floor(G.getLvl() / 2)).append(";").append((int) Math.floor(G.getLvl() / 2)).append(";").append((int) Math.floor(G.getLvl() / 2)).append(";").append((int) Math.floor(G.getLvl() / 2)).append(";").append((int) Math.floor(G.getLvl() / 2)).append(";").append((int) Math.floor(G.getLvl() / 2)).append(";");//R�sistances
-                str.append(this.team);
+                str.append(getPdv()).append(";");
+                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PA)).append(";");
+                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PM)).append(";");
+                // Half its guild's level in every resistance and dodge, nothing fixed.
+                int half = G.getLvl() / 2;
+                str.append(half).append(";").append(half).append(";").append(half).append(";").append(half).append(";").append(half).append(";");
+                str.append("0;0;0;0;0;");
+                str.append(half).append(";").append(half).append(";");
+                str.append(this.team).append(";");
+                str.append(getPdvMax());
                 break;
             case 7://Prisme
                 str.append("-2;");
@@ -1399,28 +1401,20 @@ public class Fighter implements Comparable<Fighter> {
                 str.append(getPrism().getLevel()).append(";");
                 str.append("-1;-1;-1;");
                 str.append("0,0,0,0;");
-                str.append(this.getPdvMax()).append(";");
+                str.append(getPdv()).append(";");
                 str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PA)).append(";");
                 str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PM)).append(";");
-                str.append(getTotalStats().getEffect(214)).append(";");
-                str.append(getTotalStats().getEffect(210)).append(";");
-                str.append(getTotalStats().getEffect(213)).append(";");
-                str.append(getTotalStats().getEffect(211)).append(";");
-                str.append(getTotalStats().getEffect(212)).append(";");
-                str.append(getTotalStats().getEffect(160)).append(";");
-                str.append(getTotalStats().getEffect(161)).append(";");
-                str.append(this.team);
+                str.append(resistances()).append(";");
+                str.append("0;");
+                str.append(this.team).append(";");
+                str.append(getPdvMax());
                 break;
             case 10://Double
-                str.append(getDouble().getClasse()).append(";");
+                // A creature (-1), not a character: the client only flags
+                // creatures and monsters as summoned (smaller in the timeline).
+                str.append("-1;");
                 str.append(getDouble().getGfxId()).append("^").append(getDouble().get_size()).append(";");
-                str.append(getDouble().getSexe()).append(";");
                 str.append(getDouble().getLevel()).append(";");
-                str.append(getDouble().get_align()).append(",");
-                str.append("1,");//FIXME
-                str.append((getDouble().is_showWings() ? getDouble().getALvl() : "0")).append(",");
-                str.append(getDouble().getId()).append(";");
-
                 str.append((getDouble().getColor1() == -1 ? "-1" : Integer.toHexString(getDouble().getColor1()))).append(";");
                 str.append((getDouble().getColor2() == -1 ? "-1" : Integer.toHexString(getDouble().getColor2()))).append(";");
                 str.append((getDouble().getColor3() == -1 ? "-1" : Integer.toHexString(getDouble().getColor3()))).append(";");
@@ -1428,20 +1422,30 @@ public class Fighter implements Comparable<Fighter> {
                 str.append(getPdv()).append(";");
                 str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PA)).append(";");
                 str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_PM)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_NEU)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_TER)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_FEU)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_EAU)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_RP_AIR)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_AFLEE)).append(";");
-                str.append(getTotalStats().getEffect(EffectConstant.STATS_ADD_MFLEE)).append(";");
+                str.append(resistances()).append(";");
+                str.append("1;");
                 str.append(this.team).append(";");
-                if (getDouble().isOnMount() && getDouble().getMount() != null)
-                    str.append(getDouble().getMount().getStringColor(getDouble().parsecolortomount()));
-                str.append(";");
+                str.append(getPdvMax());
                 break;
         }
 
+        return str.toString();
+    }
+
+    /**
+     * The twelve resistances of the 1.49.5 client's GM packet: percent neutral,
+     * earth, fire, water and air, the same fixed, then AP and MP dodge.
+     */
+    private String resistances() {
+        Stats s = getTotalStats();
+        int[] ids = {EffectConstant.STATS_ADD_RP_NEU, EffectConstant.STATS_ADD_RP_TER, EffectConstant.STATS_ADD_RP_FEU,
+                EffectConstant.STATS_ADD_RP_EAU, EffectConstant.STATS_ADD_RP_AIR,
+                EffectConstant.STATS_ADD_R_NEU, EffectConstant.STATS_ADD_R_TER, EffectConstant.STATS_ADD_R_FEU,
+                EffectConstant.STATS_ADD_R_EAU, EffectConstant.STATS_ADD_R_AIR,
+                EffectConstant.STATS_ADD_AFLEE, EffectConstant.STATS_ADD_MFLEE};
+        StringBuilder str = new StringBuilder();
+        for (int id : ids)
+            str.append(str.length() > 0 ? ";" : "").append(s.getEffect(id));
         return str.toString();
     }
 
