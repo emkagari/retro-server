@@ -156,13 +156,19 @@ public class GameServer {
     }
 
     /**
-     * Tells every connected client the server is going away ("k"): when the
-     * connection then closes, the client goes back to its login screen quietly
-     * instead of reporting a lost connection or trying to reconnect.
+     * Tells every connected client the server is going away. A logged-in one
+     * gets a character switch ticket: it logs in again by itself and lands on
+     * its server list (this server listed offline). Any other gets "k": it
+     * takes the disconnection as expected and goes back to its login screen,
+     * with no lost-connection error and no reconnection attempts.
      */
     public void notifyClosing() {
         for (GameClient client : getClients()) {
-            if (client != null)
+            if (client == null)
+                continue;
+            if (client.getAccount() != null)
+                client.sendSwitchTicket();
+            else
                 SocketManager.send(client, "k");
         }
         try {

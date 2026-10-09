@@ -307,6 +307,19 @@ public class GameClient {
             this.kick();
             return;
         }
+        if (this.player != null) {
+            this.account.disconnect(this.player);
+        }
+        sendSwitchTicket();
+        this.session.closeOnFlush();
+    }
+
+    /**
+     * A character switch ticket: registered at the login ("WS"), sent to the
+     * client ("HS<ticket>"), which then logs in again with it, without a
+     * password, and lands on its server list.
+     */
+    public void sendSwitchTicket() {
         String ticket = "SW" + this.account.getId() + "_" + System.currentTimeMillis() + "_"
                 + java.util.UUID.randomUUID().toString().replace("-", "");
         try {
@@ -314,13 +327,7 @@ public class GameClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // IMPORTANT : nettoyage côté serveur AVANT le write, puis closeOnFlush
-        // pour garantir que "HS<ticket>" est bien envoyé au client avant la fermeture.
-        if (this.player != null) {
-            this.account.disconnect(this.player);
-        }
         this.session.write("HS" + ticket);
-        this.session.closeOnFlush();
     }
 
     private void parsePanel(String packet) {
