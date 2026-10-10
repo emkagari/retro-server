@@ -5,8 +5,10 @@
 #
 # Downloads Ankama's 1.49.6 files (what's missing), then patch.mjs brings in
 # what the 1.43 lang files say: this server in `servers`, the maps, areas and
-# sub-areas the server knows in `maps`, its hints in `hints`. Patched files get
-# the official number + 1, and versions_<lang>.txt / versions.swf point at them.
+# sub-areas the server knows in `maps`, its non-dungeon hints in `hints`.
+# Official dungeon hints are retained because their IDs are used by the client
+# to resolve dungeon names. Patched files get the official number + 1 (hints
+# + 2), and versions_<lang>.txt / versions.swf point at them.
 # Needs curl and Node 22+. patch.mjs is bundled from the Retro Map Editor's
 # packages (patch.ts there).
 set -euo pipefail

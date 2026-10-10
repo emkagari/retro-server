@@ -700,13 +700,13 @@ function mergeTable(script, from, path) {
   return `${path.join(".")} +${added} ~${changed}`;
 }
 var sorted = (v) => isObj2(v) ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, sorted(v[k])])) : v;
-function publish(pack, lang, txt, patch) {
+function publish(pack, lang, txt, patch, versionOffset = 1) {
   const m = new RegExp(`(?:^|\\|)(?:&f=)?${pack},([a-z]*),(\\d+)`).exec(txt);
   if (!m) {
     console.log(`  ${lang}: no ${pack} entry in versions_${lang}.txt`);
     return txt;
   }
-  const official = Number(m[2]), next = official + 1;
+  const official = Number(m[2]), next = official + versionOffset;
   const script = DataScript.fromFile(join(out, "swf", `${pack}_${lang}_${official}.swf`));
   const what = patch(script);
   if (script.has(["VERSION"])) script.set(["VERSION"], next);
@@ -757,10 +757,29 @@ for (const lang of langs) {
     const list = DataScript.fromFile(hints).get(["HI"]);
     txt = publish("hints", lang, txt, (script) => {
       if (!Array.isArray(list)) return "no HI list in the 1.43 file";
+      const officialHints = script.get(["HI"]);
+      if (!Array.isArray(officialHints)) throw new LangError("HI array not found in the lang file");
+      const officialDungeonHints = new Map(
+        officialHints.filter((hint) => isObj2(hint) && hint.c === 6).map((hint) => [hint.m, hint])
+      );
+      if (officialDungeonHints.size === 0) throw new LangError("official dungeon hints not found in the lang file");
       script.set(["HI"], list);
       if (state?.hints) applyHints(script, state.hints);
-      return `HI ${list.length} hints (from ${hints.split("/").slice(-1)[0]})${edits(Object.keys(state?.hints?.entries ?? {}).length)}`;
-    });
+      const mergedList = script.get(["HI"]);
+      if (!Array.isArray(mergedList)) throw new LangError("patched HI array not found in the lang file");
+      const mergedHints = mergedList.map((hint) => {
+        if (!isObj2(hint) || hint.c !== 6) return hint;
+        return officialDungeonHints.get(hint.m) ?? hint;
+      });
+      const includedDungeonMaps = new Set(
+        mergedHints.filter((hint) => isObj2(hint) && hint.c === 6).map((hint) => hint.m)
+      );
+      for (const [map, hint] of officialDungeonHints) {
+        if (!includedDungeonMaps.has(map)) mergedHints.push(hint);
+      }
+      script.set(["HI"], mergedHints);
+      return `HI ${mergedHints.length} hints, official dungeon IDs retained (from ${hints.split("/").slice(-1)[0]})${edits(Object.keys(state?.hints?.entries ?? {}).length)}`;
+    }, 2);
   }
   writeFileSync(join(out, `versions_${lang}.txt`), txt);
 }
