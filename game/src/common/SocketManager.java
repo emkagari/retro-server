@@ -248,7 +248,8 @@ public class SocketManager {
     }
 
     public static void GAME_SEND_Ow_PACKET(Player perso) {
-        String packet = "Ow" + perso.getPodUsed() + "|" + perso.getMaxPod();
+        int maxPod = perso.getMaxPod();
+        String packet = "Ow" + perso.getPodUsed() + "|" + perso.parseStoreItemsListPods() + "|" + maxPod + "|" + maxPod;
         send(perso, packet);
 
     }
