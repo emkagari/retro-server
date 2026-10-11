@@ -930,7 +930,7 @@ public class GameCase {
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
 
                 TimerWaiter.addNext(() -> {
-                    this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY);
+                    this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY2);
                     this.getObject().setInteractive(false);
                     this.getObject().disable();
                     SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
@@ -965,7 +965,7 @@ public class GameCase {
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
 
                 TimerWaiter.addNext(() -> {
-                    this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY);
+                    this.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY2);
                     this.getObject().setInteractive(false);
                     this.getObject().disable();
                     SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), this);
@@ -1221,7 +1221,7 @@ public class GameCase {
             case 42://Tas de patate
                 if (this.object == null)
                     return;
-                this.object.setState(JobConstant.IOBJECT_STATE_EMPTY);
+                this.object.setState(JobConstant.IOBJECT_STATE_EMPTY2);
                 this.object.setInteractive(false);
                 this.object.disable();
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);
@@ -1235,7 +1235,7 @@ public class GameCase {
                 if (this.object == null)
                     return;
 
-                this.object.setState(JobConstant.IOBJECT_STATE_EMPTY);
+                this.object.setState(JobConstant.IOBJECT_STATE_EMPTY2);
                 this.object.setInteractive(false);
                 this.object.disable();
                 SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(), this);

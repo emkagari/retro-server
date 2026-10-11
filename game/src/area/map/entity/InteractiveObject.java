@@ -362,6 +362,23 @@ public class InteractiveObject {
         this.state = state;
     }
 
+    public void preserveStateFrom(InteractiveObject previous) {
+        ArrayList<InteractiveObject> queue = (ArrayList<InteractiveObject>) InteractiveObject.updatable.get();
+        if (previous.state == JobConstant.IOBJECT_STATE_EMPTYING
+                || previous.state == JobConstant.IOBJECT_STATE_FULLING) {
+            queue.remove(previous);
+            return;
+        }
+
+        this.state = previous.state;
+        this.interactive = previous.interactive;
+        this.lastTime = previous.lastTime;
+
+        int index = queue.indexOf(previous);
+        if (index >= 0)
+            queue.set(index, this);
+    }
+
     public boolean isInteractive() {
         return this.interactive;
     }
