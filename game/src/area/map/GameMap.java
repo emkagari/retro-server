@@ -2,6 +2,7 @@ package area.map;
 
 import area.SubArea;
 import area.map.entity.InteractiveDoor;
+import area.map.entity.InteractiveObject;
 import area.map.entity.MountPark;
 import client.Player;
 import common.CryptManager;
@@ -258,6 +259,12 @@ public class GameMap {
     public void reloadGeometry(String date, byte w, byte h, String key, String places,
                                String dData, byte sniffed, short capabilities,
                                int musicID, int ambianceID, int backgroundID, int outDoor) {
+        Map<Integer, InteractiveObject> previousObjects = new HashMap<>();
+        for (GameCase gameCase : this.cases) {
+            if (gameCase.getObject() != null)
+                previousObjects.put(gameCase.getId(), gameCase.getObject());
+        }
+
         this.date = date;
         this.w = w;
         this.h = h;
@@ -281,6 +288,12 @@ public class GameMap {
         this.backgroundID = backgroundID;
         this.outDoor = outDoor;
         this.cases = World.world.getCryptManager().decompileMapData(this, this.mapData, sniffed);
+        for (GameCase gameCase : this.cases) {
+            InteractiveObject previous = previousObjects.get(gameCase.getId());
+            InteractiveObject current = gameCase.getObject();
+            if (previous != null && current != null && previous.getId() == current.getId())
+                current.preserveStateFrom(previous);
+        }
 
         this.maxTeam = 0;
         try {
@@ -1704,8 +1717,11 @@ public class GameMap {
     public String getObjectsGDsPackets() {
         StringBuilder packet = new StringBuilder("GDF");
         this.cases.stream().filter(gameCase -> gameCase.getObject() != null)
-                .forEach(gameCase -> packet.append("|").append(gameCase.getId()).append(";").append(gameCase.getObject().getState())
-                        .append(";").append((gameCase.getObject().isInteractive() ? "1" : "0")));
+                .forEach(gameCase -> {
+                    InteractiveObject object = gameCase.getObject();
+                    packet.append("|").append(gameCase.getId()).append(";").append(object.getState());
+                    packet.append(";").append(object.isInteractive() ? "1" : "0");
+                });
         return packet.toString();
     }
 

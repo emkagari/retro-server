@@ -1,6 +1,7 @@
 package job;
 
 import area.map.GameCase;
+import area.map.GameMap;
 import area.map.entity.InteractiveObject;
 import client.Player;
 import common.Formulas;
@@ -21,12 +22,14 @@ import kernel.Logging;
 import object.GameObject;
 import object.ObjectTemplate;
 import org.apache.commons.lang3.ArrayUtils;
+import util.TimerWaiter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 public class JobAction {
@@ -186,6 +189,16 @@ public class JobAction {
             IO.setState(3);
             IO.desactive();
             SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), cell);
+            GameMap harvestedMap = player.getCurMap();
+            int harvestedCellId = cell.getId();
+            int harvestedObjectId = IO.getId();
+            TimerWaiter.addNext(() -> {
+                GameCase currentCell = harvestedMap.getCase(harvestedCellId);
+                if (currentCell != null && currentCell.getObject() != null
+                        && currentCell.getObject().getId() == harvestedObjectId
+                        && currentCell.getObject().getState() == JobConstant.IOBJECT_STATE_EMPTY)
+                    currentCell.getObject().setState(JobConstant.IOBJECT_STATE_EMPTY2);
+            }, 1, TimeUnit.SECONDS);
             //int qua = (this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min); PETIT PLUS
             int qua = Math.max(1, Math.round((this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min) * Config.INSTANCE.getRATE_JOB()));
 
