@@ -187,7 +187,7 @@ public class JobAction {
             IO.desactive();
             SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(player.getCurMap(), cell);
             //int qua = (this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min); PETIT PLUS
-            int qua = Math.round((this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min) * (int)(Config.INSTANCE.getRATE_JOB()/3)) ;
+            int qua = Math.max(1, Math.round((this.max > this.min ? Formulas.getRandomValue(this.min, this.max) : this.min) * Config.INSTANCE.getRATE_JOB()));
 
             if (SM.getTemplate().getId() == 36) {
                 if (qua > 0)
