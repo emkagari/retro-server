@@ -1864,6 +1864,14 @@ public class SocketManager {
 
     }
 
+    public static void GAME_SEND_Ed_PACKET(Player perso, int quantity) {
+        send(perso, "Ed" + quantity);
+    }
+
+    public static void GAME_SEND_EQ_PACKET(Player perso, int quantity) {
+        send(perso, "EQ" + quantity);
+    }
+
     public static void GAME_SEND_Ec_PACKET(Player perso, String str) {
         String packet = "Ec" + str;
         send(perso, packet);
