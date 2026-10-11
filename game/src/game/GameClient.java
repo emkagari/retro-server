@@ -2750,6 +2750,9 @@ public class GameClient {
             case 'L'://jobAction : Refaire le craft pr?cedent
                 replayCraft();
                 break;
+            case 'c'://jobAction : Quantité à fabriquer
+                setCraftQuantity(packet);
+                break;
             case 'M'://Move (Ajthiser//retirer un objet a l'?change)
                 //ready();
                 movementItemOrKamas(packet);
@@ -3474,6 +3477,24 @@ public class GameClient {
             this.player.startActionOnCell(this.player.getGameAction());
             ((BreakingObject) value).getObjects().clear();
         }
+    }
+
+    private void setCraftQuantity(String packet) {
+        ExchangeAction<?> exchangeAction = this.player.getExchangeAction();
+        if (exchangeAction == null || exchangeAction.getType() != ExchangeAction.CRAFTING || !(exchangeAction.getValue() instanceof JobAction))
+            return;
+
+        int quantity;
+        try {
+            quantity = Integer.parseInt(packet.substring(2));
+        } catch (NumberFormatException e) {
+            return;
+        }
+        if (quantity < 1)
+            return;
+
+        ((JobAction) exchangeAction.getValue()).setCraftQuantity(quantity);
+        SocketManager.GAME_SEND_EQ_PACKET(this.player, quantity);
     }
 
     private void replayCraft() {

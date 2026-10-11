@@ -43,6 +43,7 @@ public class JobAction {
     private int min = 1;
     private int max = 1;
     private boolean isCraft;
+    private int craftQuantity = 1;
     private int chan = 100;
     private int time = 0;
     private int xpWin = 0;
@@ -99,6 +100,10 @@ public class JobAction {
 
     public int getTime() {
         return this.time;
+    }
+
+    public void setCraftQuantity(int quantity) {
+        this.craftQuantity = quantity;
     }
 
     public int getXpWin() {
@@ -246,13 +251,14 @@ public class JobAction {
         }
         boolean isMassiveCraft = false;
         if(repeat == -1){
-            repeat = 1 ;
+            repeat = this.craftQuantity;
         }
+        boolean craftLoop = !isRepeat && repeat > 1;
         Map<Integer, Integer> items = new HashMap<>();
         //on ajoutes les ingrédient a une liste
         for (Entry<Long, Integer> e : this.ingredients.entrySet()) {
                 if (!this.player.hasItemGuid(e.getKey())) {
-                    SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                    this.cancelCraft();
                     return;
                 }
                     GameObject obj = World.world.getGameObject(e.getKey());
@@ -274,9 +280,8 @@ public class JobAction {
             //Recette non existante ou pas adaptï¿½ au mï¿½tier
             if (templateId == -1 || !SM.getTemplate().canCraft(this.id, templateId)) {
                 this.lastCaftID.add(templateId);
-                SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                this.cancelCraft();
                 SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-");
-                this.ingredients.clear();
                 return;
             }
             boolean canlaunch = true;
@@ -284,13 +289,13 @@ public class JobAction {
             for (Entry<Long, Integer> e : this.ingredients.entrySet()) {
                     GameObject obj = World.world.getGameObject(e.getKey());
                     if (obj == null) {
-                        SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                        this.cancelCraft();
                         return;
                     }
                     if (obj.getQuantity() < e.getValue()*repeat) {
                         this.player.sendMessage("Il te manque "+Math.abs(obj.getQuantity() - e.getValue()*repeat) + "*"+ obj.getTemplate().getName() + " pour fabriquer " + repeat + "*"+ World.world.getObjTemplate(templateId).getName() );
                         this.success = false;
-                        SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                        this.cancelCraft();
                         return;
                     }
             }
@@ -323,27 +328,17 @@ public class JobAction {
 
             int chan = JobConstant.getChanceByNbrCaseByLvl(SM.get_lvl(), this.ingredients.size());
             int chan2 = JobConstant.getChanceByNbrCaseByLvlnormal(SM.get_lvl(), this.ingredients.size());
-            int jet = Formulas.getRandomValue(1, 100);
-            boolean success = chan >= jet;
-
-            switch (this.id) {
-                case 109:
-                    success = true;
-                    break;
-            }
-
 
                 if(repeat > 1){
                     isMassiveCraft = true;
                 }
-                if (Logging.USE_LOG)
-                    Logging.getInstance().write("Craft", this.player.getName() + " à crafter avec " + (success ? "SUCCES" : "ECHEC") + " l'item " + templateId + " (" + World.world.getObjTemplate(templateId).getName() + ") " + repeat + "fois");
 
+                if (craftLoop) SocketManager.GAME_SEND_Ed_PACKET(this.player, repeat);
+                int failed = 0;
                 for(int j=1;j<=repeat;j++){
+                    boolean success = this.id == 109 || chan >= Formulas.getRandomValue(1, 100);
                     if (!success) {
-                        SocketManager.GAME_SEND_Ec_PACKET(this.player, "EF");
-                        SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-" + templateId);
-                        SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
+                        failed++;
                     } else {
 
                         GameObject newObj = World.world.getObjTemplate(templateId).createNewItemWithoutDuplicationForJobs(this.player.getItems().values(), 1, false, chan2);
@@ -382,17 +377,27 @@ public class JobAction {
                     }
                 }
 
-                SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + templateId);
-                SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + templateId);
+                if (Logging.USE_LOG)
+                    Logging.getInstance().write("Craft", this.player.getName() + " à crafter l'item " + templateId + " (" + World.world.getObjTemplate(templateId).getName() + ") " + (repeat - failed) + "/" + repeat + " fois");
+
+                if (craftLoop) this.endCraftLoop(repeat, failed);
+
+                if (failed == repeat) {
+                    SocketManager.GAME_SEND_Ec_PACKET(this.player, "EF");
+                    SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-" + templateId);
+                    SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
+                } else {
+                    SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + templateId);
+                    SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + templateId);
+                }
 
         } else {
 
             int templateId = World.world.getObjectByIngredientForJob(World.world.getMetier(this.id).getListBySkill(this.id), items);
 
             if (templateId == -1 || !World.world.getMetier(this.id).canCraft(this.id, templateId)) {
-                    SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                    this.cancelCraft();
                     SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-");
-                    this.ingredients.clear();
                     return;
             }
 
@@ -402,13 +407,13 @@ public class JobAction {
 
                     GameObject obj = World.world.getGameObject(e.getKey());
                     if (obj == null) {
-                        SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                        this.cancelCraft();
                         return;
                     }
                     if (obj.getQuantity() < e.getValue()*repeat) {
                         this.player.sendMessage("Il te manque "+Math.abs(obj.getQuantity() - e.getValue()*repeat) + "*"+ obj.getTemplate().getName() + " pour fabriquer " + repeat + "*"+ World.world.getObjTemplate(templateId).getName() );
                         this.success = false;
-                        SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+                        this.cancelCraft();
                         return;
                     }
                 }
@@ -447,6 +452,7 @@ public class JobAction {
             if (Logging.USE_LOG)
                 Logging.getInstance().write("Craft", this.player.getName() + " à crafter avec " + (success ? "SUCCES" : "ECHEC") + " l'item " + templateId + " (" + World.world.getObjTemplate(templateId).getName() + ") " + repeat + "fois");
 
+            if (craftLoop) SocketManager.GAME_SEND_Ed_PACKET(this.player, repeat);
             for(int j=1;j<=repeat;j++) {
                 GameObject newObj = null;
 
@@ -465,6 +471,7 @@ public class JobAction {
             }
 
                 SocketManager.GAME_SEND_Ow_PACKET(this.player);
+                if (craftLoop) this.endCraftLoop(repeat, 0);
                 SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + templateId);
                 SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + templateId);
             /*}
@@ -530,6 +537,20 @@ public class JobAction {
             this.oldJobCraft = this.jobCraft;
             this.jobCraft = null;
         }
+    }
+
+    private void cancelCraft() {
+        for (Long id : this.ingredients.keySet())
+            if (this.player.hasItemGuid(id))
+                SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(this.player, 'O', "-", id + "");
+        this.ingredients.clear();
+        SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
+    }
+
+    private void endCraftLoop(int repeat, int failed) {
+        SocketManager.GAME_SEND_EA_PACKET(this.player, repeat + ";" + failed + ";" + repeat + ";" + repeat);
+        SocketManager.GAME_SEND_Ea_PACKET(this.player, "1");
+        this.craftQuantity = 1;
     }
 
     private long addCraftObject(Player player, GameObject newObj) {
@@ -710,6 +731,7 @@ public class JobAction {
         this.lastCraft.clear();
         this.oldJobCraft = null;
         this.jobCraft = null;
+        this.craftQuantity = 1;
     }
 
     //FM commence a etre OK
